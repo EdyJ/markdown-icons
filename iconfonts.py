@@ -82,7 +82,7 @@ ICON_RE_END = r'(?P<name>[a-zA-Z0-9-]+)(:(?P<mod>[a-zA-Z0-9-]+(,[a-zA-Z0-9-]+)*)
 ICON_RE = ICON_RE_BEGIN + PREFIX + ICON_RE_END
 
 class IconFontsPattern(markdown.inlinepatterns.Pattern):
-	
+
 	def __init__(self, pattern, m, configs):
 		super(IconFontsPattern, self).__init__(pattern, m)
 
@@ -91,14 +91,14 @@ class IconFontsPattern(markdown.inlinepatterns.Pattern):
 	""" Return a <i> element with the necessary classes"""
 	def handleMatch(self, m):
 		d = m.groupdict()
-		
+
 		el = markdown.util.etree.Element("i")
 
 		modClassesString = ""
 		if(d.get("mod")):
-			modClassesString = " " + ' '.join((self.config['prefix'][0] + c) for c in d.get("mod").split(",") if c)
+			modClassesString = " " + ' '.join((self.config['prefix'][0] + "-" + c) for c in d.get("mod").split(",") if c)
 
-		el.set('class', self.config['prefix'][0] + d.get("name") + modClassesString)
+		el.set('class', self.config['prefix'][0] + " " + self.config['prefix'][0] + "-" + d.get("name") + modClassesString)
 		el.set('aria-hidden', 'true') # This is for Accessibility and text-to-speech browsers so they don't try to pronounce it
 		return el
 
@@ -108,7 +108,7 @@ class IconFontsExtension(markdown.Extension):
 	def __init__(self, configs):
 		# define default configs
 		self.config = {
-			'prefix': ['icon-', "Custom class prefix."]
+			'prefix': ['icon', "Custom class prefix."]
 		}
 
 		# Override defaults with user settings
@@ -121,7 +121,7 @@ class IconFontsExtension(markdown.Extension):
 			self.setConfig(key, value)
 
 		# Change prefix to what they had the in the config
-		changePrefix(self.config['prefix'][0])
+		changePrefix(self.config['prefix'][0] + "-")
 
 
 	def extendMarkdown(self, md, md_globals):
